@@ -41,6 +41,10 @@ def print_notes_by_compass(score_part_index = 0):
         if notes_names: 
             print(functools.reduce(lambda x, y: x+" "+y, notes_names))
 
+def print_part_name(score_part_index = 0):
+    trackName = root.findall('Score/Part/trackName')[score_part_index]
+    print(trackName.text)
+
 
 for file in files:
 
@@ -51,4 +55,5 @@ for file in files:
         print("Parte não encontrada")
         continue
 
+    print_part_name(part_index)
     print_notes_by_compass(part_index)
