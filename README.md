@@ -40,9 +40,9 @@ Obs: Notes are automatically transposed for your instrument
 
 # Options
 
-- pt_br (boolean) Use this if you want notes written in pt_br locale
+- locale (pt_br/en) Use this if you want notes written in pt_br locale
 - part_index (number) If your musescore file contains multiple instruments, use this to get the right part
-
+- override_transpose (positive number) semitones to subtract from transposition
 
 # Real Life Example
 
