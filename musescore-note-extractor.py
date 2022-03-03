@@ -8,12 +8,14 @@ parser = argparse.ArgumentParser(description='Prints notes from a Musescore file
 parser.add_argument('names', metavar='files', type=str, nargs='+', help='Files to read.')
 parser.add_argument('--locale', metavar='locale', type=str, nargs=1, help='Uses pt_bt note names.', default=["pt_br"])
 parser.add_argument('--part_index', metavar='part_index', type=int, nargs=1, help="Part to read", default=[0])
+parser.add_argument('--override_transpose', metavar='override_transpose', type=int, nargs=1, help="Semitones to subtract (transpose)", default=[0])
 
 
 args = parser.parse_args()
 files = args.names
 locale = args.locale[0]
 part_index = args.part_index[0]
+override_transpose = args.override_transpose[0]
 
 
 notes_map = {
@@ -41,9 +43,7 @@ def fetch_accidental_notes(measure):
 def print_notes_by_compass(score_part_index = 0):
     measures = root.findall('Score/Staff')[score_part_index].findall('Measure')
     
-    added_semitones = fetch_transposition(score_part_index)
-
-    print(added_semitones)
+    added_semitones = fetch_transposition(score_part_index) if override_transpose == 0 else override_transpose
 
     accidental_notes = 0
 
@@ -53,7 +53,7 @@ def print_notes_by_compass(score_part_index = 0):
         notes = notes_map[locale]["flat" if accidental_notes < 0 else "sharp"]
 
         notes_names = [notes[int(n.find('pitch').text)-added_semitones][0:-1] for n in measure.findall('voice/Chord/Note')]
-        
+
         if notes_names: 
             print(functools.reduce(lambda x, y: x+" "+y, notes_names))
 
@@ -71,8 +71,6 @@ for file in files:
     if part_index > len(root.findall('Score/Staff')):
         print("Parte não encontrada")
         continue
-
-
 
     print_part_name(part_index)
     print_notes_by_compass(part_index)
