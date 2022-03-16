@@ -9,7 +9,7 @@ First you need to get your desired .mscz file
 Then you can run the python script by passing the file path as first argument: 
 
 ```
-python3 musescore-note-extractor.py ~/Sample-file.mscz --pt_br --part_index=1
+python3 musescore-note-extractor.py ~/Sample-file.mscz --part_index=1
 ```
 
 This will output all written notes, one compass by line:
