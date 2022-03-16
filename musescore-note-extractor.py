@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import argparse
 import os
 import zipfile
@@ -33,8 +34,9 @@ notes_map = {
 
 
 def fetch_transposition(score_part_index = 0):
-    trasposition = root.findall('Score/Part/Instrument/transposeChromatic')[score_part_index]
-    return int(trasposition.text)
+    transposeChromaticElements = root.findall('Score/Part/Instrument/transposeChromatic')
+    transposition = transposeChromaticElements[score_part_index].text if score_part_index < len(transposeChromaticElements) else 0
+    return int(transposition)
 
 def fetch_accidental_notes(measure):
     accidental = measure.findall('voice/KeySig/accidental')
