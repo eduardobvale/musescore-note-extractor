@@ -1,5 +1,6 @@
 import argparse
-import sys
+import os
+import zipfile
 import xml.etree.ElementTree as ET
 import functools
 
@@ -43,7 +44,7 @@ def fetch_accidental_notes(measure):
 def print_notes_by_compass(score_part_index = 0):
     measures = root.findall('Score/Staff')[score_part_index].findall('Measure')
     
-    added_semitones = fetch_transposition(score_part_index) if override_transpose == 0 else override_transpose
+    added_semitones = fetch_transposition(score_part_index) if override_transpose == 0 else -override_transpose
 
     accidental_notes = 0
 
@@ -58,19 +59,38 @@ def print_notes_by_compass(score_part_index = 0):
             print(functools.reduce(lambda x, y: x+" "+y, notes_names))
 
 
-def print_part_name(score_part_index = 0):
+def get_part_name(score_part_index = 0):
     trackName = root.findall('Score/Part/trackName')[score_part_index]
-    print(trackName.text)
-
+    return trackName.text
 
 for file in files:
+    with zipfile.ZipFile(file, 'r') as zip_ref:
+        filename = os.path.basename(file)
 
-    root = ET.parse(file).getroot()
-    
+        # ideally mscx has the same name as the mscz
+        mscx_file_contents = zip_ref.open(filename.replace('mscz', 'mscx'))
 
-    if part_index > len(root.findall('Score/Staff')):
-        print("Parte não encontrada")
-        continue
+        root = ET.parse(mscx_file_contents).getroot()
 
-    print_part_name(part_index)
-    print_notes_by_compass(part_index)
+        parts_count = len(root.findall('Score/Staff'))
+
+        print("# Choose instruments from the list below:")
+
+        for part in range(0, parts_count):
+            partName = get_part_name(part)
+            print(f'{part} - {partName}')
+
+
+        if part_index > len(root.findall('Score/Staff')):
+            print("Parte não encontrada")
+            continue
+
+        partName = get_part_name(part_index)
+
+        print('\n\n')
+
+        print(f'# Notes by compass for {partName}:')
+
+        print('\n')
+
+        print_notes_by_compass(part_index)
