@@ -69,8 +69,14 @@ for file in files:
     with zipfile.ZipFile(file, 'r') as zip_ref:
         filename = os.path.basename(file)
 
-        # ideally mscx has the same name as the mscz
-        mscx_file_contents = zip_ref.open(filename.replace('mscz', 'mscx'))
+        for zip_info in zip_ref.infolist():
+            if zip_info.filename.endswith('.mscx'):
+                mscx_file_contents = zip_ref.open(zip_info.filename)
+                break
+
+        if not mscx_file_contents:
+            print(f"No .mscx file found in {file}")
+            continue
 
         root = ET.parse(mscx_file_contents).getroot()
 
